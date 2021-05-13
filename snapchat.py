@@ -21,6 +21,7 @@ class Snapchat:
         self.snapwindow = self.genWindow()
         self.genWidgets()
 
+    # Generates the window
     def genWindow(self) -> Toplevel:
         snapwindow = Toplevel(self.parent)
         snapwindow.title("Snapchat")
@@ -29,6 +30,7 @@ class Snapchat:
         snapwindow.protocol("WM_DELETE_WINDOW", lambda: self.closewin())
         return snapwindow
 
+    # Generates the widgets to be displayed on the window
     def genWidgets(self) -> None:
         # Labels
         latLabel = Label(self.snapwindow, text="Latitude: ")
@@ -88,6 +90,7 @@ class Snapchat:
         self.details.grid(row=3, column=0, columnspan=4, padx=(5, 0), pady=5)
         scroll.grid(row=3, column=4, padx=(0, 5), sticky="NS")
 
+    # Opens the images displayed in the treeview when double clicked
     def openFile(self, event) -> None:
         filename = getcwd() + "/temp/" + self.details.item(self.details.focus())['values'][0]
         try:
@@ -95,6 +98,7 @@ class Snapchat:
         except AttributeError:
             call(['open', filename])
 
+    # Saves the file to a directory of their choice from the temp folder
     def saveFile(self) -> None:
         if self.details.item(self.details.focus())['values'][1] == "Image":
             file = asksaveasfilename(initialfile=self.details.item(self.details.focus())['values'][0].rsplit(".", 1)[0], filetypes=[("JPG image", "*.jpg")]) + ".jpg"
@@ -106,6 +110,7 @@ class Snapchat:
                 with open(getcwd() + "/temp/" + self.details.item(self.details.focus())['values'][0], "rb") as f2:
                     f.write(f2.read())
 
+    # Checks to see if the range is an int, and gets the lat, long of the city if chosen
     def verifyInput(self, lat: str, long: str, city: str, range: str) -> None:
         try:
             rangeInt = int(range)
@@ -122,6 +127,7 @@ class Snapchat:
 
         self.searchSnap(coords, rangeInt)
 
+    # Clears the temp folder, and then runs the snapmap_archiver python module
     def searchSnap(self, coords: str, range: int) -> None:
         # Cleanup
         self.details.delete(*self.details.get_children())
@@ -138,6 +144,7 @@ class Snapchat:
             else:
                 self.details.insert("", 'end', values=(files, "Image"))
 
+    # Closes the window
     def closewin(self) -> None:
         for file in listdir("temp"):
             remove("temp/" + file)

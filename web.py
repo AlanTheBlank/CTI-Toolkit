@@ -7,18 +7,26 @@ import webbrowser
 from requests import HTTPError
 
 # b163827ed14661
+#
 
 class Web:
 
     def __init__(self, root: Tk) -> None:
         self.root = root
         root.withdraw()
-        self.ipinfoAPI = json.load(open("api.json", "r+"))["ipinfo"]
-        self.shodanAPI = json.load(open("api.json", "r+"))["shodan"]
+        try:
+            self.ipinfoAPI = json.load(open("api.json", "r+"))["ipinfo"]
+        except (json.JSONDecodeError, FileNotFoundError):
+            self.ipinfoAPI = None
+        try:
+            self.shodanAPI = json.load(open("api.json", "r+"))["shodan"]
+        except (json.JSONDecodeError, FileNotFoundError):
+            self.shodanAPI = None
         self.webwindow = self.genWindow()
         self.genFrames()
         self.genWidgets()
 
+    # Generates the frames which will separate the two APIs being used
     def genFrames(self) -> None:
         self.IPFrame = LabelFrame(self.webwindow, text="IP", padx=5, pady=5)
         self.ShodanFrame = LabelFrame(self.webwindow, text="Shodan", padx=5, pady=5)
@@ -26,6 +34,7 @@ class Web:
         self.IPFrame.grid(row=0, column=0, padx=10, pady=10)
         self.ShodanFrame.grid(row=1, column=0, padx=10, pady=10)
 
+    # Generates the widgets for the two frames
     def genWidgets(self) -> None:
         DetailFields: list[Entry] = []
         DetailShodanFields: list[Entry] = []
@@ -166,26 +175,31 @@ class Web:
         IPSubmit.grid(row=0, column=1, padx=5)
         IPShodanSubmit.grid(row=0, column=1, padx=5)
 
+    # Used to save the ipinfo details that are returned, there are some extra details not displayed.  Saves to the project folder with the IP
     def saveDetails(self) -> None:
         with open(self.data['ip'] + ".json", "w+") as f:
             json.dump(self.data, f)
 
+    # Checks to see if the ipInfo API key is valid, returns a boolean
     def IPinfoapivalid(self) -> bool:
         try:
-            ipinfo.getHandler(self.ipinfoAPI).getDetails(None)
+            ipinfo.getHandler("").getDetails(None)
             return True
         except HTTPError:
             return False
 
+    # Checks to see if the shodan API key is valid, returns a boolean
     def shodanValid(self) -> bool:
         try:
             test = Shodan(self.shodanAPI)
             test.host('1.1.1.1')
             return True
-        except HTTPError:
+        except exception.APIError:
             return False
 
+    # Makes the shodan API call and populates the shodan-related entry fields
     def getShodanDetails(self, Details: list[Entry], IP: str) -> None:
+        first: bool = True
         for detail in Details:
             detail.config(state='normal')
         self.clearEntries(Details)
@@ -228,13 +242,16 @@ class Web:
             else:
                 detail.config(state='disabled')
 
+    # Clears the entry fields for the API being called
     def clearEntries(self, Entries: list[Entry]) -> None:
         print('Clearing')
         for entry in Entries:
-            print(entry.get())
             entry.delete(0, END)
 
+    # Makes the ipInfo API call
     def getDetails(self, DetailFields: list[Entry], IP: str) -> None:
+        for detail in DetailFields:
+            detail.config(state='normal')
         self.clearEntries(DetailFields)
 
         info = ipinfo.getHandler(self.ipinfoAPI)
@@ -263,6 +280,7 @@ class Web:
         self.SnapcityButton.config(state="normal")
         self.SnapcoordButton.config(state="normal")
 
+    # Generates the window
     def genWindow(self) -> Toplevel:
         webwindow = Toplevel(self.root)
         webwindow.resizable(False, False)
@@ -271,6 +289,7 @@ class Web:
         webwindow.protocol("WM_DELETE_WINDOW", lambda: self.closewin())
         return webwindow
 
+    # Handles the closing of the window, opens the previously open window
     def closewin(self) -> None:
         self.root.deiconify()
         self.webwindow.destroy()

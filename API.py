@@ -10,8 +10,9 @@ class API:
         self.root = root
         root.withdraw()
         self.apiwindow = self.genWindow()
-        self.genFrame()
-        
+        self.genWidgets()
+
+    # Generates the window
     def genWindow(self) -> Toplevel:
         apiwindow = Toplevel(self.root)
         apiwindow.resizable(False, False)
@@ -20,10 +21,12 @@ class API:
         apiwindow.protocol("WM_DELETE_WINDOW", lambda: self.closewin())
         return apiwindow
 
+    # Handles the closing of the windows.  Opens previously open window
     def closewin(self) -> None:
         self.root.deiconify()
         self.apiwindow.destroy()
 
+    # Toggles the visibility of the API keys
     def visibility(self, entry: Entry, apientry: int) -> None:
         if apientry == 0:
             if self.ipInfoVisible:
@@ -42,6 +45,7 @@ class API:
         else:
             print("Unknown apientry value")
 
+    # Saves the API keys to api.json
     def SaveAPI(self, entries: list[Entry]) -> None:
         APIKeys = {
             "ipinfo": entries[0].get(),
@@ -50,13 +54,15 @@ class API:
         json.dump(APIKeys, open("api.json", "w+"))
         self.closewin()
 
+    # Get the API keys currently saved in api.json
     def getKeys(self) -> Union[dict, None]:
         try:
             return json.load(open("api.json", "r+"))
         except (FileNotFoundError, json.JSONDecodeError):
             return None
 
-    def genFrame(self) -> None:
+    # Generates the widgets for the window
+    def genWidgets(self) -> None:
         entries: list[Entry] = []
         currentKeys = self.getKeys()
         # Labels
