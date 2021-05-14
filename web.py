@@ -7,7 +7,7 @@ import webbrowser
 from requests import HTTPError
 
 # b163827ed14661
-#
+# {"ipinfo": "b163827ed14661", "shodan": "yWx7fcL7AuKlMSB5LJIV3WFimrVhKx6j"}
 
 class Web:
 
@@ -183,7 +183,7 @@ class Web:
     # Checks to see if the ipInfo API key is valid, returns a boolean
     def IPinfoapivalid(self) -> bool:
         try:
-            ipinfo.getHandler("").getDetails(None)
+            ipinfo.getHandler(self.ipinfoAPI).getDetails(None)
             return True
         except HTTPError:
             return False
@@ -244,7 +244,6 @@ class Web:
 
     # Clears the entry fields for the API being called
     def clearEntries(self, Entries: list[Entry]) -> None:
-        print('Clearing')
         for entry in Entries:
             entry.delete(0, END)
 

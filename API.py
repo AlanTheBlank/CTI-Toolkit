@@ -2,6 +2,8 @@ from tkinter import Tk, Toplevel, Label, Entry, Button, TclError
 import json
 from typing import Union
 
+#
+
 class API:
     ipInfoVisible = False
     vtKeyVisible = False

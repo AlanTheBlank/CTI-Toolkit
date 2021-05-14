@@ -104,8 +104,7 @@ class Snapchat:
             file = asksaveasfilename(initialfile=self.details.item(self.details.focus())['values'][0].rsplit(".", 1)[0], filetypes=[("JPG image", "*.jpg")]) + ".jpg"
         else:
             file = asksaveasfilename(initialfile=self.details.item(self.details.focus())['values'][0].rsplit(".", 1)[0], filetypes=[("MPEG video", "*.mp4")]) + ".mp4"
-        if file:
-            print(file)
+        if len(file) > 4:
             with open(file, "wb+") as f:
                 with open(getcwd() + "/temp/" + self.details.item(self.details.focus())['values'][0], "rb") as f2:
                     f.write(f2.read())
