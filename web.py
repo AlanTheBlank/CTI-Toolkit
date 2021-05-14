@@ -6,9 +6,6 @@ from shodan import Shodan, exception
 import webbrowser
 from requests import HTTPError
 
-# b163827ed14661
-# {"ipinfo": "b163827ed14661", "shodan": "yWx7fcL7AuKlMSB5LJIV3WFimrVhKx6j"}
-
 class Web:
 
     def __init__(self, root: Tk) -> None:
